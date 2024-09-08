@@ -1,8 +1,4 @@
 use core_graphics::display::{self, *};
-use core_graphics::display::{
-  kCGNullWindowID, kCGWindowListOptionAll, CFArrayGetCount, CFArrayGetValueAtIndex,
-  CGWindowListCopyWindowInfo,
-};
 
 use core_foundation::base::*;
 use core_foundation::number::*;
@@ -12,6 +8,9 @@ use std::ffi::{c_void, CStr};
 
 fn main() {
   let w = get_window_infos();
+  let num = w.len();
+
+  println!("Number of windows: {}", num);
 
   for i in w.iter() {
     println!("{:?}", i);
