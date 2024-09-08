@@ -12,8 +12,11 @@ fn main() {
 
   println!("Number of windows: {}", num);
 
-  for i in w.iter() {
-    println!("{:?}", i);
+  for window in w.iter() {
+    println!(
+      "[level: {:?}] {:?}, {:?}, {:?}",
+      window.level, window.id, window.name, window.bounds
+    );
   }
 }
 
@@ -21,6 +24,7 @@ fn main() {
 struct WindowInfo {
   pub id: CGWindowID,
   pub name: String,
+  pub level: CGWindowLevel,
   pub bounds: CGRect,
 }
 
@@ -47,13 +51,24 @@ fn get_window_infos() -> Vec<WindowInfo> {
         .to_i64()
         .unwrap() as CGWindowID;
 
+      // Get the window level
+      let level = w.get(unsafe { window::kCGWindowLayer }.to_void());
+      let level = unsafe { CFNumber::wrap_under_get_rule(*level as CFNumberRef) }
+        .to_i32()
+        .unwrap();
+
       // Get window bounds
       let bounds = w.get(unsafe { window::kCGWindowBounds }.to_void());
       let bounds = unsafe { CFDictionary::wrap_under_get_rule(*bounds as CFDictionaryRef) };
       let bounds = CGRect::from_dict_representation(&bounds).unwrap();
 
       // Push window info to list
-      win_infos.push(WindowInfo { id, name, bounds });
+      win_infos.push(WindowInfo {
+        id,
+        name,
+        level,
+        bounds,
+      });
     }
   }
   win_infos
