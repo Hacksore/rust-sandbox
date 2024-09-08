@@ -4,7 +4,7 @@ use core_foundation::base::*;
 use core_foundation::number::*;
 use core_foundation::string::*;
 use core_graphics::window;
-use std::ffi::{c_void, CStr};
+use std::ffi::c_void;
 
 fn main() {
   let w = get_window_infos();
@@ -53,11 +53,7 @@ fn get_window_infos() -> Vec<WindowInfo> {
       let bounds = CGRect::from_dict_representation(&bounds).unwrap();
 
       // Push window info to list
-      win_infos.push(WindowInfo {
-        id,
-        name,
-        bounds,
-      });
+      win_infos.push(WindowInfo { id, name, bounds });
     }
   }
   win_infos
