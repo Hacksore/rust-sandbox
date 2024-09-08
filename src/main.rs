@@ -12,10 +12,15 @@ fn main() {
 
   println!("Number of windows: {}", num);
 
+  let allowed_app = vec!["discord", "wezterm"];
   for window in w.iter() {
+    if !allowed_app.contains(&window.name.to_lowercase().as_str()) {
+      continue;
+    }
+
     println!(
-      "[level: {:?}] {:?}, {:?}, {:?}",
-      window.level, window.id, window.name, window.bounds
+      "[level: {:?} | order {:?}] {:?}, {:?}, {:?}",
+      window.level, window.order, window.id, window.name, window.bounds
     );
   }
 }
@@ -23,6 +28,7 @@ fn main() {
 #[derive(Debug)]
 struct WindowInfo {
   pub id: CGWindowID,
+  pub order: i32,
   pub name: String,
   pub level: CGWindowLevel,
   pub bounds: CGRect,
@@ -57,6 +63,12 @@ fn get_window_infos() -> Vec<WindowInfo> {
         .to_i32()
         .unwrap();
 
+      // Get window order in the list so we know which apps are on top
+      let order = w.get(unsafe { window::kCGWindowOwnerPID }.to_void());
+      let order = unsafe { CFNumber::wrap_under_get_rule(*order as CFNumberRef) }
+        .to_i32()
+        .unwrap();
+
       // Get window bounds
       let bounds = w.get(unsafe { window::kCGWindowBounds }.to_void());
       let bounds = unsafe { CFDictionary::wrap_under_get_rule(*bounds as CFDictionaryRef) };
@@ -66,6 +78,7 @@ fn get_window_infos() -> Vec<WindowInfo> {
       win_infos.push(WindowInfo {
         id,
         name,
+        order,
         level,
         bounds,
       });
