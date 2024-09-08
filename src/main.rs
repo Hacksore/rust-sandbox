@@ -17,8 +17,8 @@ fn main() {
     for i in 0..n_windows {
       let window = CFArrayGetValueAtIndex(window_list, i) as CFDictionaryRef;
       let name = get_window_name(window);
-      let pid = get_window_pid(window);
-      println!("{:?}, {:?}", name, pid)
+      let bounds = get_window_bounds(window);
+      // println!("{:?}, {:?}", name, bounds)
     }
 
     CFRelease(window_list as CFTypeRef);
@@ -39,6 +39,14 @@ fn get_window_name(dict_ref: CFDictionaryRef) -> Option<String> {
     }
   }
   return None;
+}
+
+fn get_window_bounds(dict_ref: CFDictionaryRef) {
+  let key = CFString::new("kCGWindowBounds");
+  let mut value: *const c_void = std::ptr::null();
+  if unsafe { CFDictionaryGetValueIfPresent(dict_ref, key.to_void(), &mut value) != 0 } {
+    let cf_ref = value as CFDictionaryRef;
+  }
 }
 
 fn get_window_pid(dict_ref: CFDictionaryRef) -> Option<u64> {
