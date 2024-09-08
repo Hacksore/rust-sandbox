@@ -19,8 +19,8 @@ fn main() {
     }
 
     println!(
-      "[level: {:?} | order {:?}] {:?}, {:?}, {:?}",
-      window.level, window.order, window.id, window.name, window.bounds
+      "[level: {:?} | owner_pid {:?}] {:?}, {:?}, {:?}",
+      window.level, window.owner_pid, window.id, window.name, window.bounds
     );
   }
 }
@@ -28,7 +28,7 @@ fn main() {
 #[derive(Debug)]
 struct WindowInfo {
   pub id: CGWindowID,
-  pub order: i32,
+  pub owner_pid: i32,
   pub name: String,
   pub level: CGWindowLevel,
   pub bounds: CGRect,
@@ -64,8 +64,8 @@ fn get_window_infos() -> Vec<WindowInfo> {
         .unwrap();
 
       // Get window order in the list so we know which apps are on top
-      let order = w.get(unsafe { window::kCGWindowOwnerPID }.to_void());
-      let order = unsafe { CFNumber::wrap_under_get_rule(*order as CFNumberRef) }
+      let owner_pid = w.get(unsafe { window::kCGWindowOwnerPID }.to_void());
+      let owner_pid = unsafe { CFNumber::wrap_under_get_rule(*owner_pid as CFNumberRef) }
         .to_i32()
         .unwrap();
 
@@ -78,7 +78,7 @@ fn get_window_infos() -> Vec<WindowInfo> {
       win_infos.push(WindowInfo {
         id,
         name,
-        order,
+        owner_pid,
         level,
         bounds,
       });
