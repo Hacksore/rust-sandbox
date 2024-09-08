@@ -37,7 +37,7 @@ struct WindowInfo {
 fn get_window_infos() -> Vec<WindowInfo> {
   let mut win_infos = vec![];
   let wins = CGDisplay::window_list_info(
-    display::kCGWindowListOptionAll, // Fetch all windows
+    display::kCGWindowListOptionAll | display::kCGWindowListOptionOnScreenBelowWindow, // Fetch all windows
     None,
   );
   if let Some(wins) = wins {
